@@ -50,8 +50,8 @@ EOF
 }
 
 gen_proxy_file_for_user() {
-    cat >proxy1.txt <<EOF
-$(awk -F "/" '{print $3 ":" $4}' ${WORKDATA})
+    cat >proxy.txt <<EOF
+$(awk -F "/" '{print $3 ":" $4 }' ${WORKDATA})
 EOF
 }
 
@@ -80,7 +80,7 @@ install_3proxy
 
 echo "working folder = /home/bkns"
 WORKDIR="/home/bkns"
-WORKDATA="${WORKDIR}/1data.txt"
+WORKDATA="${WORKDIR}/data.txt"
 mkdir $WORKDIR && cd $_
 
 IP4=$(curl -4 -s icanhazip.com)
@@ -88,19 +88,19 @@ IP6=$(curl -6 -s icanhazip.com | cut -f1-4 -d':')
 
 echo "Internal ip = ${IP4}. Exteranl sub for ip6 = ${IP6}"
 
-FIRST_PORT=22011
-LAST_PORT=22720
+FIRST_PORT=22000
+LAST_PORT=22700
 
-gen_data >$WORKDIR/1data.txt
-gen_iptables >$WORKDIR/1boot_iptables.sh
-gen_ifconfig >$WORKDIR/1boot_ifconfig.sh
+gen_data >$WORKDIR/data.txt
+gen_iptables >$WORKDIR/boot_iptables.sh
+gen_ifconfig >$WORKDIR/boot_ifconfig.sh
 chmod +x boot_*.sh /etc/rc.local
 
 gen_3proxy >/usr/local/etc/3proxy/3proxy.cfg
 
 cat >>/etc/rc.local <<EOF
-bash ${WORKDIR}/1boot_iptables.sh
-bash ${WORKDIR}/1boot_ifconfig.sh
+bash ${WORKDIR}/boot_iptables.sh
+bash ${WORKDIR}/boot_ifconfig.sh
 ulimit -n 10048
 /usr/local/etc/3proxy/bin/3proxy /usr/local/etc/3proxy/3proxy.cfg
 EOF
